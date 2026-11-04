@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#151413">
+  <meta name="description" content="Panel privado de administración de RÍO.">
+  <title>Administración · RÍO</title>
+  <base href="/">
+  <link rel="icon" type="image/png" href="assets/rio-logo-blanco.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #151413;
+      --surface: #1e1d1b;
+      --surface-raised: #24221f;
+      --line: rgba(243, 238, 228, .14);
+      --line-strong: rgba(243, 238, 228, .26);
+      --text: #f3eee4;
+      --muted: #a59e91;
+      --accent: #f0a02e;
+      --accent-hi: #ffb84d;
+      --on-accent: #1a1308;
+      --error: #ff8f78;
+      --success: #9acb8b;
+      font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { min-width: 320px; min-height: 100vh; margin: 0; }
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+    [hidden] { display: none !important; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    .layout { display: grid; min-height: 100vh; grid-template-columns: 230px minmax(0, 1fr); }
+    .sidebar { display: flex; flex-direction: column; gap: 2rem; padding: 1.5rem; border-right: 1px solid var(--line); background: #11100f; }
+    .brand { display: flex; align-items: center; gap: .75rem; font-size: .92rem; font-weight: 700; }
+    .brand img { width: auto; height: 40px; }
+    .sidebar nav { display: grid; gap: .45rem; }
+    .sidebar nav a, .sidebar-link { padding: .7rem .8rem; border: 1px solid transparent; color: var(--muted); font-size: .9rem; }
+    .sidebar nav a:hover, .sidebar-link:hover { border-color: var(--line-strong); color: var(--text); }
+    .sidebar-link { margin-top: auto; }
+    .main { width: min(1200px, 100%); margin-inline: auto; padding: clamp(1.25rem, 4vw, 3rem); }
+    .topbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+    h1, h2, h3 { margin: 0; font-stretch: 75%; font-weight: 800; text-transform: uppercase; }
+    h1 { font-size: clamp(2rem, 5vw, 3.2rem); line-height: .96; }
+    h2 { font-size: 1.3rem; }
+    h3 { font-size: 1.05rem; }
+    .eyebrow { margin: 0 0 .45rem; color: var(--accent); font-size: .75rem; font-weight: 700; letter-spacing: .12em; }
+    .session { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: .65rem; }
+    .session-email { color: var(--muted); font-size: .85rem; }
+    .notice { min-height: 1.5rem; margin: 0 0 1.25rem; color: var(--muted); }
+    .notice[data-kind="error"] { color: var(--error); }
+    .notice[data-kind="success"] { color: var(--success); }
+    .notice[data-kind="loading"] { color: var(--accent-hi); }
+    .panel { padding: clamp(1rem, 3vw, 1.6rem); border: 1px solid var(--line); background: var(--surface); }
+    .stack { display: grid; gap: 1.25rem; }
+    .login { width: min(480px, 100%); margin: clamp(2rem, 8vh, 6rem) auto; }
+    .login h2 { margin-bottom: 1.2rem; }
+    .fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .field { display: grid; min-width: 0; gap: .4rem; color: var(--muted); font-size: .86rem; }
+    .field input, .field textarea, .field select, .toolbar input, .toolbar select, .price-edit input {
+      width: 100%; min-height: 44px; padding: .65rem .75rem; border: 1px solid var(--line-strong);
+      border-radius: 2px; background: var(--bg); color: var(--text);
+    }
+    .field textarea { min-height: 5rem; resize: vertical; }
+    .field input:read-only { color: var(--muted); }
+    .hint { color: var(--muted); font-size: .75rem; font-weight: 400; }
+    .button { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; gap: .4rem; padding: .6rem .85rem; border: 1px solid var(--line-strong); border-radius: 2px; color: var(--text); background: transparent; font-size: .86rem; font-weight: 600; transition: background .2s, border-color .2s, color .2s; }
+    .button:hover { border-color: var(--accent); }
+    .button:disabled { cursor: wait; opacity: .6; }
+    .button-primary { border-color: var(--accent); background: var(--accent); color: var(--on-accent); }
+    .button-primary:hover { background: var(--accent-hi); }
+    .button-danger:hover { border-color: var(--error); color: var(--error); }
+    .summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem; }
+    .summary-card { padding: 1rem; border: 1px solid var(--line); background: var(--surface); }
+    .summary-card span { display: block; color: var(--muted); font-size: .82rem; }
+    .summary-card strong { display: block; margin-top: .2rem; font-size: 1.7rem; font-variant-numeric: tabular-nums; }
+    .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+    .toolbar { display: grid; grid-template-columns: minmax(180px, 1fr) minmax(180px, .55fr); gap: .7rem; margin-bottom: 1rem; }
+    .product-list { display: grid; gap: .7rem; }
+    .product-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 1rem; padding: 1rem; border: 1px solid var(--line); background: var(--surface); }
+    .product-heading { display: flex; align-items: center; flex-wrap: wrap; gap: .55rem; }
+    .product-meta { display: flex; flex-wrap: wrap; gap: .35rem .9rem; margin-top: .35rem; color: var(--muted); font-size: .82rem; }
+    .status { padding: .2rem .45rem; border: 1px solid var(--line); border-radius: 2px; color: var(--muted); font-size: .7rem; }
+    .status.available { border-color: rgba(154, 203, 139, .5); color: var(--success); }
+    .product-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: .55rem; }
+    .price-edit { display: flex; align-items: center; gap: .4rem; }
+    .price-edit input { width: 130px; font-variant-numeric: tabular-nums; }
+    .empty { padding: 2rem 1rem; border: 1px dashed var(--line-strong); color: var(--muted); text-align: center; }
+    .form-actions { display: flex; flex-wrap: wrap; gap: .65rem; }
+    .check { display: inline-flex; align-items: center; gap: .55rem; color: var(--text); }
+    .check input { width: 18px; height: 18px; accent-color: var(--accent); }
+    .image-preview { width: 90px; height: 70px; border: 1px solid var(--line); object-fit: cover; background: var(--bg); }
+    @media (max-width: 850px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { flex-direction: row; align-items: center; justify-content: space-between; gap: .8rem; padding: .7rem 1rem; border-right: 0; border-bottom: 1px solid var(--line); }
+      .brand img { height: 32px; }
+      .sidebar nav { display: flex; gap: .15rem; }
+      .sidebar nav a { padding: .55rem; font-size: .78rem; }
+      .sidebar-link { margin: 0; padding: .55rem; font-size: .78rem; }
+    }
+    @media (max-width: 620px) {
+      .main { padding: 1.2rem 1rem 2rem; }
+      .topbar { flex-direction: column; }
+      .session { justify-content: flex-start; }
+      .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .summary-card:last-child { grid-column: 1 / -1; }
+      .toolbar, .fields { grid-template-columns: 1fr; }
+      .product-card { grid-template-columns: 1fr; }
+      .product-actions { justify-content: flex-start; }
+      .price-edit { width: 100%; }
+      .price-edit input { flex: 1; width: auto; }
+      .section-heading { align-items: flex-start; }
+      .sidebar { flex-wrap: wrap; }
+      .sidebar nav { order: 3; width: 100%; }
+      .sidebar nav a { flex: 1; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <a class="brand" href="index.html" aria-label="RÍO, ir al sitio">
+        <img src="assets/rio-logo-blanco.png" alt="">
+        <span>ADMINISTRACIÓN</span>
+      </a>
+      <nav aria-label="Navegación del panel">
+        <a href="#resumen">Resumen</a>
+        <a href="#productos">Productos</a>
+      </nav>
+      <a class="sidebar-link" href="index.html">Volver al sitio ↗</a>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">RÍO BAR Y HAMBURGUESERÍA</p>
+          <h1>Tu carta, al día</h1>
+        </div>
+        <div class="session" id="sessionPanel" hidden>
+          <span class="session-email" id="sessionEmail"></span>
+          <button class="button" id="signOut" type="button">Cerrar sesión</button>
+        </div>
+      </header>
+
+      <p class="notice" id="notice" role="status" aria-live="polite"></p>
+
+      <section class="panel login" id="loginPanel">
+        <h2>Ingresar al panel</h2>
+        <form class="stack" id="loginForm">
+          <label class="field" for="email">Correo electrónico
+            <input id="email" type="email" autocomplete="username" required>
+          </label>
+          <label class="field" for="password">Contraseña
+            <input id="password" type="password" autocomplete="current-password" required>
+          </label>
+          <button class="button button-primary" type="submit">Iniciar sesión</button>
+        </form>
+      </section>
+
+      <section class="stack" id="management" hidden>
+        <section class="summary" id="resumen" aria-label="Resumen de productos">
+          <article class="summary-card"><span>Productos en la carta</span><strong id="totalCount">0</strong></article>
+          <article class="summary-card"><span>Disponibles</span><strong id="availableCount">0</strong></article>
+          <article class="summary-card"><span>Categorías</span><strong id="categoryCount">0</strong></article>
+        </section>
+
+        <section id="productos">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">ADMINISTRÁ TU MENÚ</p>
+              <h2>Productos</h2>
+            </div>
+            <button class="button button-primary" id="newProduct" type="button">+ Agregar producto</button>
+          </div>
+          <div class="toolbar">
+            <input id="search" type="search" placeholder="Buscar por nombre…" aria-label="Buscar productos por nombre">
+            <select id="categoryFilter" aria-label="Filtrar por categoría">
+              <option value="">Todas las categorías</option>
+            </select>
+          </div>
+          <div class="product-list" id="productList" aria-live="polite"></div>
+          <p class="empty" id="emptyState" hidden>No hay productos que coincidan con la búsqueda.</p>
+        </section>
+
+        <form class="panel stack" id="productForm" hidden>
+          <div>
+            <p class="eyebrow">DETALLE DEL PRODUCTO</p>
+            <h2 id="formTitle">Agregar producto</h2>
+          </div>
+          <div class="fields">
+            <label class="field" for="name">Nombre
+              <input id="name" required maxlength="120">
+            </label>
+            <label class="field" for="productId">Código interno <span class="hint">Se crea automáticamente a partir del nombre.</span>
+              <input id="productId" readonly required>
+            </label>
+            <label class="field" for="price">Precio en pesos
+              <input id="price" type="number" min="0" step="1" inputmode="numeric" required>
+            </label>
+            <label class="field" for="category">Categoría
+              <input id="category" list="categoryOptions" required maxlength="80">
+              <datalist id="categoryOptions"></datalist>
+            </label>
+            <label class="field" for="num">Número de carta (opcional)
+              <input id="num" maxlength="20">
+            </label>
+            <label class="field" for="displayOrder">Orden de aparición
+              <input id="displayOrder" type="number" step="1" value="0" required>
+            </label>
+            <label class="field" for="imageUrl">Imagen: URL o ruta del sitio
+              <input id="imageUrl" type="text" inputmode="url" placeholder="https://… o ruta de imagen existente">
+            </label>
+            <label class="field" for="description">Descripción
+              <textarea id="description" maxlength="1000"></textarea>
+            </label>
+            <label class="field" for="ingredients">Ingredientes (separados por coma)
+              <textarea id="ingredients"></textarea>
+            </label>
+            <label class="field" for="variation">Ilustración (opcional)
+              <input id="variation" maxlength="40">
+            </label>
+          </div>
+          <div class="form-actions">
+            <label class="check"><input id="available" type="checkbox" checked> Disponible en la carta</label>
+            <label class="check"><input id="featured" type="checkbox"> Destacado</label>
+          </div>
+          <div class="form-actions">
+            <button class="button button-primary" id="saveProduct" type="submit">Guardar producto</button>
+            <button class="button" id="cancelEdit" type="button">Cancelar</button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/menu-data.js"></script>
+  <script src="assets/supabase-config.js"></script>
+  <script src="assets/supabase-client.js"></script>
+  <script>
+    (() => {
+      'use strict';
+      const $ = selector => document.querySelector(selector);
+      const notice = $('#notice');
+      const productList = $('#productList');
+      const productForm = $('#productForm');
+      const formatter = new Intl.NumberFormat('es-AR');
+      let products = [];
+      let editingId = null;
+      let authorized = false;
+      let sessionCheck = 0;
+      let unsubscribeProducts = null;
+      let refreshTimer;
+
+      function showNotice(message, kind = '') {
+        notice.textContent = message;
+        notice.dataset.kind = kind;
+      }
+
+      function showError(message, error) {
+        console.error(message, error);
+        showNotice(`${message} ${error.message || ''}`.trim(), 'error');
+      }
+
+      function requireClient() {
+        try {
+          return window.RIO_SUPABASE.getClient();
+        } catch (error) {
+          showError('No se pudo iniciar Supabase.', error);
+          return null;
+        }
+      }
+
+      function makeButton(text, action, id, className = 'button') {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = className;
+        button.dataset.action = action;
+        button.dataset.id = id;
+        button.textContent = text;
+        return button;
+      }
+
+      function renderSummary() {
+        $('#totalCount').textContent = String(products.length);
+        $('#availableCount').textContent = String(products.filter(product => product.available).length);
+        $('#categoryCount').textContent = String(new Set(products.map(product => product.category)).size);
+        const selected = $('#categoryFilter').value;
+        const categories = [...new Set(products.map(product => product.category))].sort((a, b) => a.localeCompare(b, 'es'));
+        $('#categoryFilter').replaceChildren(new Option('Todas las categorías', ''));
+        categories.forEach(category => $('#categoryFilter').add(new Option(category, category)));
+        $('#categoryFilter').value = categories.includes(selected) ? selected : '';
+        const categoryOptions = $('#categoryOptions');
+        categoryOptions.replaceChildren(...categories.map(category => {
+          const option = document.createElement('option');
+          option.value = category;
+          return option;
+        }));
+      }
+
+      function renderProducts() {
+        renderSummary();
+        const query = $('#search').value.trim().toLocaleLowerCase('es-AR');
+        const category = $('#categoryFilter').value;
+        const filtered = products.filter(product =>
+          (!category || product.category === category)
+          && (!query || product.name.toLocaleLowerCase('es-AR').includes(query))
+        );
+        productList.replaceChildren();
+        filtered.forEach(product => {
+          const card = document.createElement('article');
+          card.className = 'product-card';
+          const info = document.createElement('div');
+          const heading = document.createElement('div');
+          heading.className = 'product-heading';
+          const title = document.createElement('h3');
+          title.textContent = product.name;
+          const status = document.createElement('span');
+          status.className = `status${product.available ? ' available' : ''}`;
+          status.textContent = product.available ? 'Disponible' : 'Pausado';
+          heading.append(title, status);
+          const meta = document.createElement('div');
+          meta.className = 'product-meta';
+          const categoryLabel = document.createElement('span');
+          categoryLabel.textContent = product.category;
+          const orderLabel = document.createElement('span');
+          orderLabel.textContent = `Orden ${product.display_order}`;
+          meta.append(categoryLabel, orderLabel);
+          info.append(heading, meta);
+
+          const actions = document.createElement('div');
+          actions.className = 'product-actions';
+          const priceEdit = document.createElement('div');
+          priceEdit.className = 'price-edit';
+          const price = document.createElement('input');
+          price.type = 'number';
+          price.min = '0';
+          price.step = '1';
+          price.inputMode = 'numeric';
+          price.value = String(product.price);
+          price.setAttribute('aria-label', `Precio de ${product.name}`);
+          const savePrice = makeButton('Guardar precio', 'price', product.id, 'button button-primary');
+          priceEdit.append(price, savePrice);
+          actions.append(
+            priceEdit,
+            makeButton('Editar', 'edit', product.id),
+            makeButton(product.available ? 'Pausar' : 'Activar', 'availability', product.id),
+            makeButton('Eliminar', 'delete', product.id, 'button button-danger')
+          );
+          card.append(info, actions);
+          productList.append(card);
+        });
+        $('#emptyState').hidden = filtered.length !== 0;
+      }
+
+      async function loadProducts(showLoading = false) {
+        const client = requireClient();
+        if (!client) return;
+        if (showLoading) showNotice('Cargando productos…', 'loading');
+        const { data, error } = await client.from('productos')
+          .select('id,numero,nombre,descripcion,precio,categoria,imagen,disponible,orden,created_at,ingredientes,destacado,variacion')
+          .order('orden')
+          .order('id');
+        if (error) throw error;
+        if (!Array.isArray(data)) throw new Error('Supabase devolvió una lista de productos inválida.');
+        products = data.map(window.RIO_SUPABASE.normalizeProduct);
+        renderProducts();
+        showNotice('');
+      }
+
+      function slug(value) {
+        return value.normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '') || 'producto';
+      }
+
+      function fillForm(product = null) {
+        editingId = product ? product.id : null;
+        $('#formTitle').textContent = product ? 'Editar producto' : 'Agregar producto';
+        $('#productId').value = product ? product.id : slug($('#name').value || '');
+        $('#name').value = product ? product.name : '';
+        $('#price').value = product ? product.price : '';
+        $('#category').value = product ? product.category : '';
+        $('#num').value = product ? product.num : '';
+        $('#displayOrder').value = product ? product.display_order : String(products.length * 10 + 10);
+        $('#imageUrl').value = product ? product.photo : '';
+        $('#description').value = product ? product.desc : '';
+        $('#ingredients').value = product ? product.ingredients.join(', ') : '';
+        $('#variation').value = product ? product.v : '';
+        $('#available').checked = product ? product.available : true;
+        $('#featured').checked = product ? product.featured : false;
+        productForm.hidden = false;
+        if (product) $('#name').focus();
+        else $('#name').focus();
+        productForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      function closeForm() {
+        productForm.reset();
+        productForm.hidden = true;
+        editingId = null;
+      }
+
+      async function savePatch(id, patch, successMessage) {
+        const client = requireClient();
+        if (!client || !authorized) return;
+        showNotice('Guardando…', 'loading');
+        const { error } = await client.from('productos').update(patch).eq('id', id);
+        if (error) {
+          showError('No se pudieron guardar los cambios.', error);
+          return;
+        }
+        try {
+          await loadProducts();
+        } catch (loadError) {
+          showError('El cambio se guardó, pero no se pudo actualizar la lista.', loadError);
+          return;
+        }
+        showNotice(successMessage, 'success');
+      }
+
+      async function handleSession(session) {
+        const currentCheck = ++sessionCheck;
+        $('#sessionPanel').hidden = !session;
+        $('#loginPanel').hidden = Boolean(session);
+        $('#management').hidden = true;
+        authorized = false;
+        if (unsubscribeProducts) {
+          unsubscribeProducts();
+          unsubscribeProducts = null;
+        }
+        if (!session) {
+          closeForm();
+          products = [];
+          renderProducts();
+          return;
+        }
+        $('#sessionEmail').textContent = session.user.email || '';
+        showNotice('Verificando permisos…', 'loading');
+        const client = requireClient();
+        if (!client) return;
+        const { data, error } = await client.from('admin_users')
+          .select('user_id')
+          .eq('user_id', session.user.id)
+          .maybeSingle();
+        if (currentCheck !== sessionCheck) return;
+        if (error) throw error;
+        if (!data) {
+          showNotice('Esta cuenta no está autorizada para administrar productos.', 'error');
+          return;
+        }
+        authorized = true;
+        $('#management').hidden = false;
+        try {
+          await loadProducts(true);
+          if (currentCheck !== sessionCheck) return;
+          unsubscribeProducts = window.RIO_SUPABASE.subscribeProducts(
+            () => {
+              clearTimeout(refreshTimer);
+              refreshTimer = setTimeout(() => {
+                loadProducts().catch(error => showError('No se pudieron actualizar los productos.', error));
+              }, 150);
+            },
+            status => {
+              if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+                console.error(`El canal Realtime del panel informó: ${status}.`);
+              }
+            }
+          );
+        } catch (loadError) {
+          showError('No se pudieron cargar los productos.', loadError);
+        }
+      }
+
+      $('#loginForm').addEventListener('submit', async event => {
+        event.preventDefault();
+        const client = requireClient();
+        if (!client) return;
+        const submit = event.submitter;
+        if (submit) submit.disabled = true;
+        showNotice('Iniciando sesión…', 'loading');
+        try {
+          const { error } = await client.auth.signInWithPassword({
+            email: $('#email').value.trim(),
+            password: $('#password').value
+          });
+          if (error) showError('No se pudo iniciar sesión.', error);
+        } catch (error) {
+          showError('No se pudo iniciar sesión.', error);
+        } finally {
+          if (submit) submit.disabled = false;
+        }
+      });
+
+      $('#signOut').addEventListener('click', async event => {
+        const client = requireClient();
+        if (!client) return;
+        const button = event.currentTarget;
+        button.disabled = true;
+        try {
+          const { error } = await client.auth.signOut();
+          if (error) showError('No se pudo cerrar la sesión.', error);
+          else showNotice('Sesión cerrada.', 'success');
+        } catch (error) {
+          showError('No se pudo cerrar la sesión.', error);
+        } finally {
+          button.disabled = false;
+        }
+      });
+
+      $('#newProduct').addEventListener('click', () => fillForm());
+      $('#cancelEdit').addEventListener('click', closeForm);
+      $('#name').addEventListener('input', () => {
+        if (!editingId) $('#productId').value = slug($('#name').value);
+      });
+      $('#search').addEventListener('input', renderProducts);
+      $('#categoryFilter').addEventListener('change', renderProducts);
+
+      productList.addEventListener('click', async event => {
+        const button = event.target.closest('button[data-action]');
+        if (!button || !authorized) return;
+        const product = products.find(item => item.id === button.dataset.id);
+        if (!product) return;
+        if (button.dataset.action === 'edit') {
+          fillForm(product);
+          return;
+        }
+        if (button.dataset.action === 'price') {
+          const input = button.parentElement.querySelector('input');
+          const price = Number(input.value);
+          if (!input.value.trim() || !Number.isSafeInteger(price) || price < 0) {
+            showNotice('Ingresá un precio entero igual o mayor a cero.', 'error');
+            input.focus();
+            return;
+          }
+          button.disabled = true;
+          try {
+            await savePatch(product.id, { precio: price }, 'Precio actualizado.');
+          } catch (error) {
+            showError('No se pudieron actualizar los productos.', error);
+          } finally {
+            button.disabled = false;
+          }
+          return;
+        }
+        if (button.dataset.action === 'availability') {
+          button.disabled = true;
+          try {
+            await savePatch(product.id, { disponible: !product.available }, 'Disponibilidad actualizada.');
+          } catch (error) {
+            showError('No se pudieron actualizar los productos.', error);
+          } finally {
+            button.disabled = false;
+          }
+          return;
+        }
+        if (button.dataset.action === 'delete' && window.confirm(`¿Eliminar "${product.name}" de la carta? Esta acción no se puede deshacer.`)) {
+          const client = requireClient();
+          if (!client) return;
+          button.disabled = true;
+          try {
+            const { error } = await client.from('productos').delete().eq('id', product.id);
+            if (error) throw error;
+          } catch (error) {
+            button.disabled = false;
+            showError('No se pudo eliminar el producto.', error);
+            return;
+          }
+          try {
+            await loadProducts();
+            showNotice('Producto eliminado.', 'success');
+          } catch (error) {
+            showError('El producto se eliminó, pero no se pudo actualizar la lista.', error);
+          }
+        }
+      });
+
+      productForm.addEventListener('submit', async event => {
+        event.preventDefault();
+        if (!authorized) return;
+        const price = Number($('#price').value);
+        const order = Number($('#displayOrder').value);
+        if (!Number.isSafeInteger(price) || price < 0 || !Number.isSafeInteger(order)) {
+          showNotice('El precio debe ser un entero no negativo y el orden un entero.', 'error');
+          return;
+        }
+        const image = $('#imageUrl').value.trim();
+        if (image && !/^https?:\/\//i.test(image) && !/^[a-z0-9][a-z0-9/_\-.]*$/i.test(image)) {
+          showNotice('La imagen debe ser una URL http(s) o una ruta de archivo válida.', 'error');
+          $('#imageUrl').focus();
+          return;
+        }
+        const product = {
+          id: $('#productId').value,
+          numero: $('#num').value.trim(),
+          nombre: $('#name').value.trim(),
+          descripcion: $('#description').value.trim(),
+          precio: price,
+          categoria: $('#category').value.trim(),
+          imagen: image,
+          disponible: $('#available').checked,
+          orden: order,
+          ingredientes: $('#ingredients').value.split(',').map(item => item.trim()).filter(Boolean),
+          destacado: $('#featured').checked,
+          variacion: $('#variation').value.trim()
+        };
+        const client = requireClient();
+        if (!client) return;
+        const saveButton = $('#saveProduct');
+        saveButton.disabled = true;
+        showNotice('Guardando producto…', 'loading');
+        try {
+          const query = editingId
+            ? client.from('productos').update(product).eq('id', editingId)
+            : client.from('productos').insert(product);
+          const { error } = await query;
+          if (error) throw error;
+          closeForm();
+        } catch (error) {
+          showError('No se pudo guardar el producto.', error);
+          return;
+        } finally {
+          saveButton.disabled = false;
+        }
+        try {
+          await loadProducts();
+          showNotice('Producto guardado.', 'success');
+        } catch (error) {
+          showError('El producto se guardó, pero no se pudo actualizar la lista.', error);
+        }
+      });
+
+      const client = requireClient();
+      if (client) {
+        client.auth.onAuthStateChange((_event, session) => {
+          Promise.resolve().then(() => handleSession(session)).catch(error => {
+            showError('No se pudo verificar el acceso al panel.', error);
+          });
+        });
+        client.auth.getSession().then(({ data, error }) => {
+          if (error) throw error;
+          return handleSession(data.session);
+        }).catch(error => showError('No se pudo recuperar la sesión.', error));
+      }
+    })();
+  </script>
+</body>
+</html>
