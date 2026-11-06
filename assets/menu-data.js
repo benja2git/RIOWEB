@@ -15,7 +15,7 @@
     openingMinute: 30,
     openMessage: 'Abierto ahora · Jue a dom desde 19:30 hs',
     publicMenuUrl: '', // Set the final public HTTPS URL ending in /carta.html after deployment.
-    instagram: null,
+    instagram: 'https://www.instagram.com/rio.hamburgueseria/',
     facebook: null
   };
   const PHOTOS = {
@@ -129,12 +129,9 @@
   }));
 
   function mergeProducts(products) {
-    const liveProducts = Array.isArray(products)
-      ? products.filter(product => product.category !== 'Hamburguesas')
-      : [];
-    const knownIds = new Set([...BURGERS, ...OTHER_PRODUCTS].map(product => product.id));
-    const extraProducts = liveProducts.filter(product => !knownIds.has(product.id));
-    return [...BURGERS, ...OTHER_PRODUCTS, ...extraProducts];
+    // Supabase is the catalog source of truth. Keep the legacy arrays only as
+    // migration references; never merge their hardcoded prices into live orders.
+    return Array.isArray(products) ? products : [];
   }
 
 window.RIO_DATA = { BUSINESS, PHOTOS, BURGERS, OTHER_PRODUCTS, mergeProducts };
