@@ -103,8 +103,40 @@ section{padding:clamp(4.5rem,9vw,8.5rem) 0}
 
 /* Menú */
 .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(2.5rem,4vw,3.75rem) clamp(1.5rem,2.5vw,2.5rem)}
+.featured-track{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:calc((100% - 2 * clamp(1.5rem,2.5vw,2.5rem))/3);gap:clamp(1.5rem,2.5vw,2.5rem);overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x mandatory;scrollbar-width:none;padding:0 0 .7rem;scroll-behavior:smooth}
+.featured-track::-webkit-scrollbar{display:none}
+.featured-track>.card{min-width:0;scroll-snap-align:start;scroll-snap-stop:always}
+.featured-heading{grid-template-columns:minmax(0,1fr) auto;align-items:end;margin-bottom:1.75rem}
+.featured-heading h2{font-size:clamp(2.5rem,5.2vw,4.6rem)}
+.section-head p.eyebrow{max-width:none;margin:0 0 .75rem;color:var(--accent-hi);font-size:.78rem;font-weight:750;letter-spacing:.14em;text-transform:uppercase}
+.carousel-controls{display:flex;align-items:center;gap:.55rem}
+.carousel-arrow{display:grid;place-items:center;width:48px;height:48px;border:1px solid var(--line-strong);border-radius:50%;color:var(--text);font-size:1.35rem;transition:background .2s,border-color .2s,color .2s}
+.carousel-arrow:hover:not(:disabled){border-color:var(--accent);background:var(--accent);color:var(--on-accent)}
+.carousel-arrow:disabled{opacity:.38;cursor:not-allowed}
+.carousel-dots{display:flex;justify-content:center;gap:.55rem;margin:1.35rem 0 0}
+.carousel-dot{width:9px;height:9px;border-radius:50%;background:var(--line-strong);transition:width .25s,background .25s}
+.carousel-dot[aria-current="true"]{width:28px;border-radius:99px;background:var(--accent)}
+.menu-cta-row{display:flex;justify-content:center;margin-top:clamp(2.5rem,5vw,4rem)}
+.menu-cta{display:inline-flex;align-items:center;justify-content:center;gap:.8rem;min-height:54px;padding:.85rem 1.35rem;border:1px solid var(--accent);border-radius:var(--r);background:var(--accent);color:var(--on-accent);font-weight:750;transition:transform .2s,background .2s}
+.menu-cta:hover{transform:translateY(-2px);background:var(--accent-hi)}
+.menu-moments{padding-top:clamp(1rem,3vw,2.5rem)}
+.moment-grid{display:grid;grid-template-columns:1.05fr .95fr 1fr;gap:1rem}
+.moment-card{position:relative;display:flex;min-height:clamp(270px,34vw,440px);flex-direction:column;justify-content:flex-end;overflow:hidden;padding:clamp(1.3rem,2.6vw,2.2rem);border:1px solid var(--line-strong);border-radius:var(--r);background:var(--bg-deep);isolation:isolate}
+.moment-card::before{position:absolute;z-index:-1;inset:0;background:linear-gradient(0deg,rgba(10,9,8,.96),rgba(10,9,8,.48) 50%,rgba(10,9,8,.08)),var(--moment-image) center/cover;content:"";transition:transform .6s var(--ease)}
+.moment-card:hover::before{transform:scale(1.045)}
+.moment-card h3{margin:0 0 .55rem;font-size:clamp(1.7rem,2.5vw,2.5rem);line-height:1}
+.moment-card p{max-width:34ch;margin:0 0 1.1rem;color:rgba(243,238,228,.78);line-height:1.5}
+.moment-link{align-self:flex-start;color:var(--accent-hi);font-weight:700}
+.moment-link::after{content:"  ↗"}
+.menu-intro{max-width:38rem;margin:-.45rem 0 1.75rem;color:var(--muted);line-height:1.55}
+.eyebrow{margin:0 0 .75rem;color:var(--accent-hi);font-size:.78rem;font-weight:750;letter-spacing:.14em;text-transform:uppercase}
+.menu-status{margin:0 0 1.5rem;color:var(--muted)}
 .card{display:flex;flex-direction:column}
 .card-img{position:relative;aspect-ratio:1/1;overflow:hidden;background:var(--bg-deep);font:inherit}
+.mini-blob{position:absolute;inset:12%;border-radius:50%;background:radial-gradient(circle at 40% 35%,var(--bg-raise),var(--bg-deep) 70%);opacity:.75}
+.burger-svg{position:absolute;inset:14%;display:grid;place-items:center}
+.burger-svg svg{width:100%;height:100%}
+.item-placeholder{position:absolute;inset:0;display:grid;place-items:center;color:var(--accent);font-weight:800;letter-spacing:.2em;font-size:2rem}
 .card-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 1s var(--ease)}
 .card:hover .card-photo{transform:scale(1.035)}
 .tag{position:absolute;top:0;left:0;padding:.55rem .85rem .5rem;background:var(--bg);font-stretch:75%;font-weight:800;font-size:1rem;line-height:1;letter-spacing:.03em}
@@ -124,6 +156,11 @@ section{padding:clamp(4.5rem,9vw,8.5rem) 0}
 /* Última tarjeta destacada cuando quedaría sola en su fila */
 @media (min-width:1001px){
   .card:last-child:nth-child(3n+1){grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(1.5rem,4vw,4rem);align-items:center}
+  .featured-track>.card:last-child:nth-child(3n+1){grid-column:auto;display:flex;grid-template-columns:none;gap:0;align-items:stretch}
+  .featured-track>.card:last-child:nth-child(3n+1) .card-img{aspect-ratio:1/1}
+  .featured-track>.card:last-child:nth-child(3n+1) .card-body{flex:1;justify-content:flex-start;padding-top:1.15rem}
+  .featured-track>.card:last-child:nth-child(3n+1) .card-body h3{font-size:clamp(1.8rem,2.4vw,2.2rem)}
+  .featured-track>.card:last-child:nth-child(3n+1) .card-body p{flex:1;max-width:34ch;font-size:.97rem}
   .card:last-child:nth-child(3n+1) .card-img{aspect-ratio:16/10}
   .card:last-child:nth-child(3n+1) .card-photo{object-position:50% 78%}
   .card:last-child:nth-child(3n+1) .card-body{flex:none;justify-content:center;padding-top:0}
@@ -132,6 +169,11 @@ section{padding:clamp(4.5rem,9vw,8.5rem) 0}
 }
 @media (min-width:701px) and (max-width:1000px){
   .card:last-child:nth-child(2n+1){grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(1.5rem,4vw,4rem);align-items:center}
+  .featured-track>.card:last-child:nth-child(2n+1){grid-column:auto;display:flex;grid-template-columns:none;gap:0;align-items:stretch}
+  .featured-track>.card:last-child:nth-child(2n+1) .card-img{aspect-ratio:1/1}
+  .featured-track>.card:last-child:nth-child(2n+1) .card-body{flex:1;justify-content:flex-start;padding-top:1.15rem}
+  .featured-track>.card:last-child:nth-child(2n+1) .card-body h3{font-size:clamp(1.8rem,2.4vw,2.2rem)}
+  .featured-track>.card:last-child:nth-child(2n+1) .card-body p{flex:1;max-width:34ch;font-size:.97rem}
   .card:last-child:nth-child(2n+1) .card-img{aspect-ratio:16/10}
   .card:last-child:nth-child(2n+1) .card-photo{object-position:50% 78%}
   .card:last-child:nth-child(2n+1) .card-body{flex:none;justify-content:center;padding-top:0}
@@ -151,6 +193,24 @@ section{padding:clamp(4.5rem,9vw,8.5rem) 0}
 .gallery-grid figure:nth-child(4){grid-column:10/13;grid-row:1/3}
 .gallery-grid figure:nth-child(4) img{object-position:38% 50%}
 .gallery-grid figcaption{position:absolute;left:0;bottom:0;padding:.55rem .9rem;background:var(--bg-deep);font-size:.85rem;font-weight:500}
+
+/* Comunidad */
+.community{background:var(--bg)}
+.community-head{display:flex;align-items:end;justify-content:space-between;gap:2rem;margin-bottom:2rem}
+.community-head .section-head{margin:0}
+.community-intro{max-width:35rem;margin:.75rem 0 0;color:var(--muted)}
+.community-link{display:inline-flex;align-items:center;gap:.6rem;flex:none;padding:.8rem 1rem;border:1px solid var(--line-strong);font-weight:600;transition:border-color .2s,color .2s}
+.community-link:hover{border-color:var(--accent);color:var(--accent-hi)}
+.community-feed{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}
+.community-post{position:relative;display:block;overflow:hidden;background:var(--bg-deep);aspect-ratio:1}
+.community-post img{width:100%;height:100%;object-fit:cover;transition:transform .7s var(--ease)}
+.community-post:hover img{transform:scale(1.045)}
+.community-post::after{content:'↗';position:absolute;right:.75rem;bottom:.65rem;padding:.15rem .5rem;background:var(--bg-deep);font-size:1.2rem}
+.community-empty{grid-column:1/-1;display:flex;min-height:230px;align-items:center;justify-content:center;flex-direction:column;gap:.45rem;padding:2rem;border:1px dashed var(--line-strong);text-align:center}
+.community-empty strong{font-size:1.15rem}
+.community-empty span{max-width:36rem;color:var(--muted)}
+.community-status{min-height:1.5em;margin:.75rem 0 0;color:var(--muted);font-size:.85rem}
+@media (max-width:900px){.community-feed{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 /* Identidad */
 .identity-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:clamp(1.5rem,3vw,3rem);align-items:start}
@@ -255,6 +315,9 @@ fieldset.field{min-width:0;margin:0;padding:0;border:0}
 /* Responsive */
 @media (max-width:1000px){
   .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .featured-track{grid-template-columns:none;grid-auto-columns:calc((100% - 1.5rem)/2)}
+  .moment-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .moment-card:last-child{grid-column:1/-1;min-height:300px}
   .section-head{grid-template-columns:1fr}
   .identity-photo{grid-column:1/-1;margin-top:0;max-width:30rem}
   .identity-copy{grid-column:1/-1;margin-top:3rem}
@@ -282,6 +345,18 @@ fieldset.field{min-width:0;margin:0;padding:0;border:0}
   .hero-cta .btn{width:100%}
   .hero-meta{grid-template-columns:1fr;padding-bottom:1.5rem}
   .cards{grid-template-columns:1fr;gap:3rem}
+  .featured-heading{grid-template-columns:1fr auto;gap:.8rem;margin-bottom:1.5rem}
+  .featured-heading h2{font-size:clamp(2.25rem,10vw,3.4rem)}
+  .carousel-arrow{width:42px;height:42px}
+  .featured-track{grid-template-columns:none;grid-auto-columns:min(86%,360px);gap:1rem;margin-right:calc(clamp(1.1rem,5vw,2rem)*-1);padding-right:clamp(1.1rem,5vw,2rem);scroll-padding-left:0}
+  .featured-track .card{gap:0}
+  .featured-track .card-img{aspect-ratio:1/1}
+  .featured-track .card-body h3{font-size:1.75rem}
+  .featured-track .card-body p{font-size:.92rem}
+  .featured-track .card-foot{align-items:flex-start;flex-direction:column;gap:.75rem}
+  .featured-track .add-btn{width:100%}
+  .moment-grid{grid-template-columns:1fr;gap:.8rem}
+  .moment-card,.moment-card:last-child{grid-column:auto;min-height:290px}
   .card-img{aspect-ratio:5/4}
   .card-body p{max-width:none}
   .gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:none;grid-auto-rows:46vw}
@@ -289,6 +364,10 @@ fieldset.field{min-width:0;margin:0;padding:0;border:0}
   .gallery-grid figure:nth-child(2){grid-column:1;grid-row:3}
   .gallery-grid figure:nth-child(3){grid-column:1;grid-row:4}
   .gallery-grid figure:nth-child(4){grid-column:2;grid-row:3/5}
+  .community-head{align-items:stretch;flex-direction:column}
+  .community-head .section-head{grid-template-columns:1fr}
+  .community-link{align-self:flex-start}
+  .community-feed{grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}
   .principles>div{grid-template-columns:1fr;gap:.4rem}
   .facts>div{grid-template-columns:6rem minmax(0,1fr)}
   .map-wrap,.map-wrap iframe{min-height:320px}
@@ -303,12 +382,8 @@ fieldset.field{min-width:0;margin:0;padding:0;border:0}
 }
 
 /* Carta interactiva */
-.menu-filters{display:flex;gap:.65rem;overflow-x:auto;margin:0 0 clamp(2rem,4vw,3rem);padding:0 0 .45rem;scrollbar-width:thin;scrollbar-color:var(--line-strong) transparent}
-.menu-status{margin:0 0 1.5rem;color:var(--muted)}
 .menu-status[data-kind="error"]{color:var(--error)}
-.menu-filters[hidden],.product-ingredients[hidden],.product-dialog-photo img[hidden]{display:none!important}
-.menu-filter{flex:0 0 auto;padding:.7rem 1rem;border:1px solid var(--line-strong);border-radius:var(--r);color:var(--muted);font-size:.9rem;transition:background .2s,color .2s,border-color .2s}
-.menu-filter:hover,.menu-filter[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:var(--on-accent)}
+.product-ingredients[hidden],.product-dialog-photo img[hidden]{display:none!important}
 .card-img.card-open{display:block;width:100%;padding:0;border:0;text-align:inherit;color:inherit;cursor:pointer}
 .card-detail{align-self:flex-start;margin-top:.85rem;padding:0;color:var(--muted);font-size:.9rem;text-decoration:underline;text-underline-offset:4px}
 .card-detail:hover{color:var(--text)}
@@ -345,7 +420,6 @@ fieldset.field{min-width:0;margin:0;padding:0;border:0}
 .business-socials:empty{display:none}
 .business-socials a{width:auto;padding:0 .8rem;font-size:.85rem}
 @media(max-width:700px){
-  .menu-filters{margin-right:calc(clamp(1.1rem,5vw,2rem)*-1);padding-right:clamp(1.1rem,5vw,2rem)}
   .product-overlay,.lightbox-overlay{padding:0;align-items:stretch}
   .product-dialog{display:flex;flex-direction:column;width:100%;max-height:100dvh;height:100%;border:0;border-radius:0}
   .product-dialog-photo{flex:0 0 auto;min-height:0;aspect-ratio:4/3}
@@ -407,13 +481,48 @@ fieldset.field{min-width:0;margin:0;padding:0;border:0}
 
 <section class="menu" id="menu">
   <div class="container">
-    <div class="section-head reveal">
-      <h2>Nuestra carta</h2>
-      <p>Hamburguesas y acompañamientos.</p>
+    <div class="section-head featured-heading reveal">
+      <div>
+        <p class="eyebrow">Selección de la casa</p>
+        <h2 id="featuredTitle">Mejores hamburguesas</h2>
+      </div>
+      <div class="carousel-controls" aria-label="Controles del carrusel">
+        <button class="carousel-arrow" id="featuredPrev" type="button" aria-label="Hamburguesa anterior" disabled>←</button>
+        <button class="carousel-arrow" id="featuredNext" type="button" aria-label="Siguiente hamburguesa">→</button>
+      </div>
     </div>
-    <div class="menu-filters" id="menuFilters" role="group" aria-label="Categorías de la carta"></div>
+    <p class="menu-intro">Cuatro favoritas de RÍO, hechas para disfrutar con papas fritas. Deslizá para descubrirlas.</p>
     <p class="menu-status" id="menuStatus" role="status" aria-live="polite" hidden></p>
-    <div class="cards" id="cards"></div>
+    <div class="cards featured-track" id="featuredCards" role="region" aria-label="Mejores hamburguesas de la casa" aria-roledescription="carrusel" tabindex="0"></div>
+    <div class="carousel-dots" id="featuredDots" role="group" aria-label="Elegir hamburguesa destacada"></div>
+    <div class="menu-cta-row"><a class="menu-cta" href="carta.html">Ver la carta completa <span aria-hidden="true">↗</span></a></div>
+  </div>
+</section>
+
+<section class="menu-moments" aria-labelledby="momentsTitle">
+  <div class="container">
+    <div class="section-head reveal">
+      <div><p class="eyebrow">Hay un RÍO para cada antojo</p><h2 id="momentsTitle">Elegí tu momento</h2></div>
+      <p>De la plancha a las opciones sin carne, y de ahí a una ronda para compartir.</p>
+    </div>
+    <div class="moment-grid">
+      <article class="moment-card" style="--moment-image:url('assets/menu-photo-plancha.webp')">
+        <h3>Smash y plancha</h3>
+        <p>Medallones bien dorados, queso fundido y ese sabor que sale directo de la plancha.</p>
+        <a class="moment-link" href="carta.html#categoria-hamburguesas">Explorar hamburguesas</a>
+      </article>
+      <article class="moment-card" style="--moment-image:url('assets/menu-photo-castano.jpg')">
+        <h3>Opciones vegetarianas</h3>
+        <p>Río Negro, con lentejas, y Río Castaño, con porotos negros y arroz yamaní.</p>
+        <a class="moment-link" href="carta.html#categoria-hamburguesas">Ver opciones sin carne</a>
+      </article>
+      <article class="moment-card" style="--moment-image:url('assets/menu-photo-gin-tonic.webp')">
+        <h3>Tapeo y tragos</h3>
+        <p>Algo para picar, un gin tonic o vermut y tiempo para quedarse un rato más.</p>
+        <a class="moment-link" href="carta.html#categoria-tapeo">Ver tapeo y bebidas</a>
+      </article>
+    </div>
+    <div class="menu-cta-row"><a class="menu-cta" href="carta.html">Descubrir toda la carta <span aria-hidden="true">↗</span></a></div>
   </div>
 </section>
 
@@ -432,6 +541,22 @@ fieldset.field{min-width:0;margin:0;padding:0;border:0}
       <h2 id="galTitle">Galería</h2>
     </div>
     <div class="gallery-grid" id="galleryGrid"></div>
+  </div>
+</section>
+
+<section class="community section" id="comunidad" aria-labelledby="communityTitle">
+  <div class="container">
+    <div class="community-head reveal">
+      <div class="section-head">
+        <h2 id="communityTitle">El rincón de la comunidad</h2>
+        <p class="community-intro">Tus momentos también son parte de RÍO. Etiquetanos o compartí tu foto con <strong>#RioBurgers</strong>.</p>
+      </div>
+      <a class="community-link" href="https://www.instagram.com/explore/tags/rioburgers/" target="_blank" rel="noopener">Ver #RioBurgers <span aria-hidden="true">↗</span></a>
+    </div>
+    <div class="community-feed" id="communityFeed" aria-live="polite" aria-busy="true">
+      <div class="community-empty"><strong>Un lugar para tus momentos en RÍO</strong><span>Cuando conectemos la cuenta profesional de Instagram, acá vas a ver las publicaciones recientes de la comunidad.</span></div>
+    </div>
+    <p class="community-status" id="communityStatus" role="status">Cargando publicaciones…</p>
   </div>
 </section>
 
@@ -598,10 +723,11 @@ fieldset.field{min-width:0;margin:0;padding:0;border:0}
 (async () => {
   'use strict';
   const { BUSINESS, PHOTOS } = window.RIO_DATA;
-  let PRODUCTS = [];
+  let PRODUCTS = window.RIO_DATA.mergeProducts([]);
   let productLoadFailed = false;
   try {
-    PRODUCTS = (await window.RIO_SUPABASE.getProducts()).filter(product => product.available !== false);
+    PRODUCTS = window.RIO_DATA.mergeProducts(await window.RIO_SUPABASE.getProducts())
+      .filter(product => product.available !== false);
   } catch (error) {
     productLoadFailed = true;
     console.error('No se pudo cargar el catálogo de Supabase.', error);
@@ -609,7 +735,7 @@ fieldset.field{min-width:0;margin:0;padding:0;border:0}
   const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 
   const $ = (s, c = document) => c.querySelector(s);
-  const money = n => '$' + n.toLocaleString('es-AR');
+  const money = n => Number.isFinite(n) && n > 0 ? '$' + n.toLocaleString('es-AR') : 'Consultar';
 
 
 
@@ -640,15 +766,19 @@ fieldset.field{min-width:0;margin:0;padding:0;border:0}
   /* ====== Render del menú ====== */
   const tagOf = p => p.tag || [p.name.replace('Hamburguesa ', ''), p.num || '2x'];
   const photoSource = photo => PHOTOS[photo] || photo || '';
-  const cards = $('#cards'), menuFilters = $('#menuFilters');
-  let categories = [...new Set(PRODUCTS.map(p => p.category).filter(Boolean))];
-  let activeCategory = categories[0] || '';
+  const featuredTrack = $('#featuredCards');
+  const featuredDots = $('#featuredDots');
+  const featuredPrev = $('#featuredPrev');
+  const featuredNext = $('#featuredNext');
+  const FEATURED_BURGER_IDS = ['rio-dorado', 'rio-grande', 'rio-traful', 'oklahoma'];
+  let featuredProducts = [];
+  let featuredScrollFrame = 0;
 
   function renderCards(products, container) {
     container.innerHTML = products.map((p, i) => `
-      <article class="card card-enter">
+      <article class="card card-enter" role="group" aria-roledescription="diapositiva" aria-label="${i + 1} de ${products.length}: ${esc(p.name)}">
         <button class="card-img card-open${p.photo ? ' has-photo' : ''}" data-id="${esc(p.id)}" aria-label="Ver detalle de ${esc(p.name)}">
-          ${p.photo && photoSource(p.photo) ? `<img class="card-photo" src="${esc(photoSource(p.photo))}" alt="${esc(p.name)}" loading="lazy" width="640" height="640">` : `<div class="mini-blob"></div><div class="burger-svg">${burgerSVG(p.v)}</div>`}
+          ${p.photo && photoSource(p.photo) ? `<img class="card-photo" src="${esc(photoSource(p.photo))}" alt="${esc(p.name)}" loading="lazy" width="640" height="640">` : p.category === 'Hamburguesas' ? `<div class="mini-blob"></div><div class="burger-svg">${burgerSVG(p.v)}</div>` : `<div class="mini-blob"></div><span class="item-placeholder">RÍO</span>`}
           ${p.num ? `<span class="tag"><b>${tagOf(p)[0]}</b><i>${p.num}</i></span>` : ''}
         </button>
         <div class="card-body">
@@ -657,35 +787,88 @@ fieldset.field{min-width:0;margin:0;padding:0;border:0}
           <button class="card-detail card-open" data-id="${esc(p.id)}">Ver detalle</button>
           <div class="card-foot">
             <span class="price">${money(p.price)}</span>
-            <button class="add-btn" data-id="${esc(p.id)}">Agregar al Pedido</button>
+            ${Number.isFinite(p.price) && p.price > 0 ? `<button class="add-btn" data-id="${esc(p.id)}">Agregar al Pedido</button>` : ''}
           </div>
         </div>
       </article>`).join('');
   }
 
-  function renderMenu(category = activeCategory) {
-    activeCategory = category;
-    menuFilters.innerHTML = categories.map(name =>
-      `<button class="menu-filter" type="button" data-category="${esc(name)}" aria-pressed="${name === activeCategory}">${esc(name)}</button>`
-    ).join('');
-    menuFilters.hidden = categories.length < 2;
-    renderCards(PRODUCTS.filter(p => p.category === activeCategory), cards);
+  function syncFeaturedControls() {
+    featuredScrollFrame = 0;
+    const cards = [...featuredTrack.children];
+    if (!cards.length) {
+      featuredPrev.disabled = true;
+      featuredNext.disabled = true;
+      featuredDots.replaceChildren();
+      return;
+    }
+    const maxScroll = Math.max(0, featuredTrack.scrollWidth - featuredTrack.clientWidth);
+    const pageCount = Math.max(1, Math.ceil(featuredTrack.scrollWidth / featuredTrack.clientWidth));
+    if (featuredDots.children.length !== pageCount) {
+      featuredDots.innerHTML = Array.from({ length: pageCount }, (_, index) =>
+        `<button class="carousel-dot" type="button" data-slide="${index}" aria-label="Ir a la parte ${index + 1} de ${pageCount}" aria-current="${index === 0}"></button>`
+      ).join('');
+    }
+    const currentPage = maxScroll ? Math.round((featuredTrack.scrollLeft / maxScroll) * (pageCount - 1)) : 0;
+    featuredPrev.disabled = featuredTrack.scrollLeft <= 1;
+    featuredNext.disabled = featuredTrack.scrollLeft >= maxScroll - 1;
+    featuredDots.querySelectorAll('.carousel-dot').forEach((dot, index) => {
+      dot.setAttribute('aria-current', String(index === currentPage));
+    });
   }
 
-  renderMenu();
+  function requestFeaturedSync() {
+    if (!featuredScrollFrame) featuredScrollFrame = requestAnimationFrame(syncFeaturedControls);
+  }
+
+  function scrollToFeatured(page) {
+    const pageCount = Math.max(1, featuredDots.children.length);
+    const maxScroll = Math.max(0, featuredTrack.scrollWidth - featuredTrack.clientWidth);
+    const targetPage = Math.max(0, Math.min(page, pageCount - 1));
+    const behavior = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+    featuredTrack.scrollTo({ left: pageCount > 1 ? maxScroll * targetPage / (pageCount - 1) : 0, behavior });
+  }
+
+  function renderFeatured() {
+    featuredProducts = FEATURED_BURGER_IDS
+      .map(id => PRODUCTS.find(product => product.id === id))
+      .filter(product => product && product.category === 'Hamburguesas' && product.available !== false);
+    renderCards(featuredProducts, featuredTrack);
+    featuredTrack.scrollLeft = 0;
+    syncFeaturedControls();
+  }
+
+  renderFeatured();
   const menuStatus = $('#menuStatus');
   if (productLoadFailed || !PRODUCTS.length) {
     menuStatus.hidden = false;
     menuStatus.dataset.kind = productLoadFailed ? 'error' : '';
     menuStatus.textContent = productLoadFailed
-      ? 'No pudimos cargar el menú. Revisá la conexión e intentá nuevamente.'
+      ? 'No pudimos cargar los productos administrados. Te mostramos la carta disponible.'
       : 'Todavía no hay productos disponibles en la carta.';
   }
 
-  menuFilters.addEventListener('click', e => {
-    const filter = e.target.closest('[data-category]');
-    if (filter && categories.includes(filter.dataset.category)) renderMenu(filter.dataset.category);
+  featuredPrev.addEventListener('click', () => {
+    const activeDot = featuredDots.querySelector('[aria-current="true"]');
+    scrollToFeatured((Number(activeDot?.dataset.slide) || 0) - 1);
   });
+  featuredNext.addEventListener('click', () => {
+    const activeDot = featuredDots.querySelector('[aria-current="true"]');
+    scrollToFeatured((Number(activeDot?.dataset.slide) || 0) + 1);
+  });
+  featuredDots.addEventListener('click', event => {
+    const dot = event.target.closest('[data-slide]');
+    if (dot) scrollToFeatured(Number(dot.dataset.slide));
+  });
+  featuredTrack.addEventListener('scroll', requestFeaturedSync, { passive: true });
+  featuredTrack.addEventListener('keydown', event => {
+    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+    event.preventDefault();
+    const activeDot = featuredDots.querySelector('[aria-current="true"]');
+    const index = Number(activeDot?.dataset.slide) || 0;
+    scrollToFeatured(index + (event.key === 'ArrowRight' ? 1 : -1));
+  });
+  window.addEventListener('resize', requestFeaturedSync, { passive: true });
 
   function renderSpecials() {
     const specials = PRODUCTS.filter(p => p.featured || p.category === 'Combos');
@@ -697,6 +880,50 @@ fieldset.field{min-width:0;margin:0;padding:0;border:0}
   const GALLERY = [["albahaca", "Hamburguesa con hojas verdes, tomates secos, hongos y cebolla caramelizada", null], ["sesamo", "Hamburguesa con pan de sésamo, morrón asado y queso fundido", null], ["plancha", "Doble smash con cheddar aplastándose en la plancha", "A la plancha"], ["bar", "Bartender sirviendo un trago en vasos con hielo", "Bar"]];
   $('#galleryGrid').innerHTML = GALLERY.map(([k, alt, cap], i) =>
     `<figure class="reveal d${i % 3}"><button class="gallery-open" type="button" data-index="${i}" aria-label="Ampliar fotografía: ${alt}"><img src="${PHOTOS[k]}" alt="${alt}" loading="lazy" width="520" height="650"></button>${cap ? `<figcaption>${cap}</figcaption>` : ''}</figure>`).join('');
+
+  async function loadCommunityFeed() {
+    const feed = $('#communityFeed');
+    const status = $('#communityStatus');
+    const emptyMessage = (title, copy) => {
+      const panel = document.createElement('div'); panel.className = 'community-empty';
+      const heading = document.createElement('strong'); heading.textContent = title;
+      const text = document.createElement('span'); text.textContent = copy;
+      panel.append(heading, text); return panel;
+    };
+    try {
+      const response = await fetch('/.netlify/functions/instagram-feed');
+      const result = await response.json();
+      if (!response.ok) throw new Error('No se pudo cargar Instagram.');
+      feed.replaceChildren();
+      if (!result.configured) {
+        feed.append(emptyMessage('Conectá el Instagram de RÍO', 'El feed aparecerá cuando se configure la cuenta profesional en Netlify. Mientras tanto, compartí tus fotos con #RioBurgers.'));
+        status.textContent = 'Feed de Instagram pendiente de configuración.';
+        return;
+      }
+      const posts = Array.isArray(result.posts) ? result.posts : [];
+      if (!posts.length) {
+        feed.append(emptyMessage('Todavía no hay publicaciones para mostrar', 'Etiquetanos o publicá con #RioBurgers para aparecer en este rincón.'));
+        status.textContent = 'Mostrando publicaciones recientes de la comunidad.';
+        return;
+      }
+      posts.slice(0, 8).forEach(post => {
+        if (!post.permalink || !post.mediaUrl) return;
+        const link = document.createElement('a'); link.className = 'community-post';
+        link.href = post.permalink; link.target = '_blank'; link.rel = 'noopener';
+        const image = document.createElement('img'); image.src = post.mediaUrl;
+        image.alt = post.caption || 'Publicación de la comunidad de RÍO'; image.loading = 'lazy';
+        link.append(image); feed.append(link);
+      });
+      if (!feed.childElementCount) feed.append(emptyMessage('No se pudieron mostrar las publicaciones', 'Volvé a intentarlo más tarde.'));
+      status.textContent = 'Publicaciones recientes de la comunidad en Instagram.';
+    } catch (error) {
+      feed.replaceChildren(emptyMessage('Instagram no está disponible ahora', 'Podés visitar #RioBurgers mientras volvemos a conectar el feed.'));
+      status.textContent = 'No se pudo actualizar el feed.';
+    } finally {
+      feed.setAttribute('aria-busy', 'false');
+    }
+  }
+  loadCommunityFeed();
 
   let galleryFocus = null;
   $('#galleryGrid').addEventListener('click', e => {
@@ -764,6 +991,8 @@ fieldset.field{min-width:0;margin:0;padding:0;border:0}
     $('#productName').textContent = activeProduct.name;
     $('#productDescription').textContent = activeProduct.desc || '';
     $('#productPrice').textContent = money(activeProduct.price);
+    $('#addProduct').hidden = !(Number.isFinite(activeProduct.price) && activeProduct.price > 0);
+    $('#productQuantity').parentElement.hidden = $('#addProduct').hidden;
     const productImage = $('#productImage');
     if (activeProduct.photo && photoSource(activeProduct.photo)) {
       productImage.src = photoSource(activeProduct.photo);
@@ -830,7 +1059,10 @@ fieldset.field{min-width:0;margin:0;padding:0;border:0}
   Object.keys(cart).forEach(id => { if (!PRODUCTS.find(p => p.id === id)) delete cart[id]; });
   const save = () => { try { localStorage.setItem('rio-cart', JSON.stringify(cart)); } catch (e) {} };
   const count = () => Object.values(cart).reduce((a, b) => a + b, 0);
-  const total = () => Object.entries(cart).reduce((s, [id, q]) => s + PRODUCTS.find(p => p.id === id).price * q, 0);
+  const total = () => Object.entries(cart).reduce((s, [id, q]) => {
+    const product = PRODUCTS.find(p => p.id === id);
+    return s + (Number.isFinite(product?.price) ? product.price * q : 0);
+  }, 0);
 
   const els = {
     count: $('#cartCount'), items: $('#cartItems'), summary: $('#cartSummary'), foot: $('#drawerFoot'),
@@ -878,6 +1110,10 @@ fieldset.field{min-width:0;margin:0;padding:0;border:0}
       console.error(`No se encontró el producto "${id}" para agregar al pedido.`);
       return;
     }
+    if (!Number.isFinite(product.price) || product.price <= 0) {
+      toast(`Consultá el precio de ${product.name} por WhatsApp`);
+      return;
+    }
     if (!Number.isSafeInteger(quantity) || quantity < 1) {
       console.error(`La cantidad para "${id}" debe ser un entero positivo.`);
       return;
@@ -904,14 +1140,13 @@ fieldset.field{min-width:0;margin:0;padding:0;border:0}
       if (detailButton) openProduct(detailButton.dataset.id);
     });
   }
-  bindCardActions(cards);
+  bindCardActions(featuredTrack);
   bindCardActions($('#specialCards'));
 
   function applyProducts(products) {
-    PRODUCTS = products.filter(product => product.available !== false);
-    categories = [...new Set(PRODUCTS.map(product => product.category).filter(Boolean))];
-    if (!categories.includes(activeCategory)) activeCategory = categories[0] || '';
-    renderMenu();
+    PRODUCTS = window.RIO_DATA.mergeProducts(products)
+      .filter(product => product.available !== false);
+    renderFeatured();
     renderSpecials();
     menuStatus.hidden = PRODUCTS.length > 0;
     menuStatus.dataset.kind = '';

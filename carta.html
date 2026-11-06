@@ -225,8 +225,8 @@
       'use strict';
       const $ = (selector, context = document) => context.querySelector(selector);
       const formatter = new Intl.NumberFormat('es-AR');
-      const money = value => `$${formatter.format(value)}`;
-      const CATEGORY_ORDER = ['Hamburguesas', 'Combos', 'Papas y acompa?amientos', 'Pollo frito', 'Rabas y otros platos', 'Bebidas sin alcohol', 'Cervezas', 'Extras y adicionales'];
+      const money = value => Number.isFinite(value) && value > 0 ? `$${formatter.format(value)}` : 'Consultar';
+      const CATEGORY_ORDER = ['Hamburguesas', 'Combos', 'Tapeo', 'Papas o batatas', 'Ensaladas', 'Bebidas sin alcohol', 'Vinos y champagne', 'Cerveza artesanal', 'Gin tonic', 'Vodka', 'Vermutería', 'Papas y acompañamientos', 'Pollo frito', 'Rabas y otros platos', 'Extras y adicionales'];
       const orderOf = category => { const i = CATEGORY_ORDER.indexOf(category); return i === -1 ? CATEGORY_ORDER.length : i; };
       const categoryList = $('#categoryList');
       const catalog = $('#catalog');
@@ -528,7 +528,8 @@
         BUSINESS = data.BUSINESS;
         PHOTOS = data.PHOTOS;
         const showSoldOut = BUSINESS.soldOutDisplay === 'label';
-        products = data.PRODUCTS.filter(product => product.category && (product.available !== false || showSoldOut));
+        products = window.RIO_DATA.mergeProducts(data.PRODUCTS)
+          .filter(product => product.category && (product.available !== false || showSoldOut));
         categories = [...new Set(products.map(product => product.category))];
         if (!data.CATEGORIES) categories.sort((a, b) => orderOf(a) - orderOf(b));
         applyBusiness();
@@ -551,14 +552,15 @@
       }
 
       function applyProducts(products) {
-          applyData({ ...window.RIO_DATA, PRODUCTS: products });
-          showNotice(products.length ? '' : 'Todavía no hay productos disponibles en la carta.', products.length ? '' : 'warn');
+          const mergedProducts = window.RIO_DATA.mergeProducts(products);
+          applyData({ ...window.RIO_DATA, PRODUCTS: mergedProducts });
+          showNotice(mergedProducts.length ? '' : 'Todavía no hay productos disponibles en la carta.', mergedProducts.length ? '' : 'warn');
       }
 
       function showLoadError(error) {
         console.error('No se pudo cargar el catálogo de Supabase.', error);
-        if (!products.length) applyBusinessOnly(window.RIO_DATA);
-        showNotice('No pudimos actualizar la carta. Revisá la conexión e intentá nuevamente.', 'error');
+        if (!products.length) applyData({ ...window.RIO_DATA, PRODUCTS: [] });
+        showNotice('No pudimos cargar los productos administrados. Te mostramos la carta disponible.', 'error');
       }
 
       window.RIO_SUPABASE.getProducts()
