@@ -25,6 +25,44 @@ create table if not exists public.admin_users (
 alter table public.productos enable row level security;
 alter table public.admin_users enable row level security;
 
+-- Public image bucket; writes remain restricted to users explicitly authorized below.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('menu-images', 'menu-images', true, 5242880, array['image/png','image/jpeg','image/webp'])
+on conflict (id) do update set public = true, file_size_limit = 5242880,
+  allowed_mime_types = array['image/png','image/jpeg','image/webp'];
+
+drop policy if exists "Public can view menu images" on storage.objects;
+create policy "Public can view menu images" on storage.objects
+  for select to anon, authenticated using (bucket_id = 'menu-images');
+
+drop policy if exists "Admins can upload menu images" on storage.objects;
+create policy "Admins can upload menu images" on storage.objects
+  for insert to authenticated with check (
+    bucket_id = 'menu-images' and exists (
+      select 1 from public.admin_users where user_id = (select auth.uid())
+    )
+  );
+
+drop policy if exists "Admins can update menu images" on storage.objects;
+create policy "Admins can update menu images" on storage.objects
+  for update to authenticated using (
+    bucket_id = 'menu-images' and exists (
+      select 1 from public.admin_users where user_id = (select auth.uid())
+    )
+  ) with check (
+    bucket_id = 'menu-images' and exists (
+      select 1 from public.admin_users where user_id = (select auth.uid())
+    )
+  );
+
+drop policy if exists "Admins can delete menu images" on storage.objects;
+create policy "Admins can delete menu images" on storage.objects
+  for delete to authenticated using (
+    bucket_id = 'menu-images' and exists (
+      select 1 from public.admin_users where user_id = (select auth.uid())
+    )
+  );
+
 revoke all on public.productos from anon, authenticated;
 revoke all on public.admin_users from anon, authenticated;
 grant select on public.productos to anon, authenticated;

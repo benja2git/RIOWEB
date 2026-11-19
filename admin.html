@@ -217,6 +217,10 @@
             <label class="field" for="imageUrl">Imagen: URL o ruta del sitio
               <input id="imageUrl" type="text" inputmode="url" placeholder="https://… o ruta de imagen existente">
             </label>
+            <label class="field" for="imageFile">Subir o reemplazar imagen
+              <input id="imageFile" type="file" accept="image/png,image/jpeg,image/webp">
+              <span class="hint">PNG, JPG o WebP; hasta 5 MB. Se guarda en Supabase Storage.</span>
+            </label>
             <label class="field" for="description">Descripción
               <textarea id="description" maxlength="1000"></textarea>
             </label>
@@ -521,6 +525,28 @@
       $('#cancelEdit').addEventListener('click', closeForm);
       $('#name').addEventListener('input', () => {
         if (!editingId) $('#productId').value = slug($('#name').value);
+      });
+      $('#imageFile').addEventListener('change', async event => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        if (!authorized) { showNotice('Iniciá sesión con una cuenta administradora para subir imágenes.', 'error'); event.target.value = ''; return; }
+        if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024) {
+          showNotice('Elegí una imagen PNG, JPG o WebP de hasta 5 MB.', 'error'); event.target.value = ''; return;
+        }
+        const client = requireClient();
+        if (!client) return;
+        const id = $('#productId').value || slug($('#name').value);
+        const extension = file.type === 'image/jpeg' ? 'jpg' : file.type.split('/')[1];
+        const path = `${id}/${crypto.randomUUID()}.${extension}`;
+        showNotice('Subiendo imagen…', 'loading');
+        try {
+          const { error } = await client.storage.from('menu-images').upload(path, file, { contentType: file.type, upsert: false });
+          if (error) throw error;
+          $('#imageUrl').value = client.storage.from('menu-images').getPublicUrl(path).data.publicUrl;
+          showNotice('Imagen lista. Guardá el producto para aplicar el cambio.', 'success');
+        } catch (error) {
+          showError('No se pudo subir la imagen.', error);
+        }
       });
       $('#search').addEventListener('input', renderProducts);
       $('#categoryFilter').addEventListener('change', renderProducts);
